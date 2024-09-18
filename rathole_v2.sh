@@ -279,12 +279,12 @@ fi
    For the high number of connections, I recommend turning off the Heartbeat option" 
     echo
     colorize green "1) Configure for Russia server" bold
-    colorize magenta "2) Configure for Outside Russia server" bold
+    colorize magenta "2) Configure for Outside server" bold
     echo
     read -p "Enter your choice: " configure_choice
     case "$configure_choice" in
-        1) russia_server_configuration ;;
-        2) outside_russia_server_configuration ;;
+        1) Russia_server_configuration ;;
+        2) Outside_server_configuration ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
     echo
@@ -296,7 +296,7 @@ fi
 service_dir="/etc/systemd/system"
   
 # Function to configure Russia server
-russia_server_configuration() {  
+Russia_server_configuration() {  
     clear
     colorize cyan "Configuring Russia server" bold
     
@@ -420,7 +420,7 @@ russia_server_configuration() {
 	
 	
     # Generate server configuration file
-    cat << EOF > "${config_dir}/russia${tunnel_port}.toml"
+    cat << EOF > "${config_dir}/Russia${tunnel_port}.toml"
 [server]
 bind_addr = "${local_ip}:${tunnel_port}"
 default_token = "$token"
@@ -436,7 +436,7 @@ EOF
 
     # Add each config port to the configuration file
     for port in "${config_ports[@]}"; do
-        cat << EOF >> "${config_dir}/russia${tunnel_port}.toml"
+        cat << EOF >> "${config_dir}/Russia${tunnel_port}.toml"
 [server.services.${port}]
 type = "$transport"
 bind_addr = "${local_ip}:${port}"
@@ -447,14 +447,14 @@ EOF
     echo 
 
     # Create the systemd service unit file
-    cat << EOF > "${service_dir}/rathole-russia${tunnel_port}.service"
+    cat << EOF > "${service_dir}/rathole-Russia${tunnel_port}.service"
 [Unit]
 Description=Rathole Russia Port $tunnel_port (Russia)
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=${config_dir}/rathole ${config_dir}/russia${tunnel_port}.toml
+ExecStart=${config_dir}/rathole ${config_dir}/Russia${tunnel_port}.toml
 Restart=always
 RestartSec=3
 
@@ -466,7 +466,7 @@ EOF
     systemctl daemon-reload >/dev/null 2>&1
 
     # Enable and start the service to start on boot
-    if systemctl enable --now "${service_dir}/rathole-russia${tunnel_port}.service" >/dev/null 2>&1; then
+    if systemctl enable --now "${service_dir}/rathole-Russia${tunnel_port}.service" >/dev/null 2>&1; then
         colorize green "Russia service with port $tunnel_port enabled to start on boot and started."
     else
         colorize red "Failed to enable service with port $tunnel_port. Please check your system configuration."
@@ -477,10 +477,10 @@ EOF
     colorize green "Russia server configuration completed successfully."
 }
 
-#Function for configuring Outside Russia server
-outside_russia_server_configuration() {
+#Function for configuring Outside server
+Outside_server_configuration() {
     clear
-    colorize cyan "Configuring Outside Russia server" bold 
+    colorize cyan "Configuring Outside server" bold 
     
     echo
  
@@ -609,7 +609,7 @@ outside_russia_server_configuration() {
 	fi
 
     # Generate server configuration file
-    cat << EOF > "${config_dir}/outside_russia${tunnel_port}.toml"
+    cat << EOF > "${config_dir}/Outside${tunnel_port}.toml"
 [client]
 remote_addr = "${SERVER_ADDR}:${tunnel_port}"
 default_token = "$token"
@@ -626,7 +626,7 @@ EOF
 
     # Add each config port to the configuration file
     for port in "${config_ports[@]}"; do
-        cat << EOF >> "${config_dir}/outside_russia${tunnel_port}.toml"
+        cat << EOF >> "${config_dir}/Outside${tunnel_port}.toml"
 [client.services.${port}]
 type = "$transport"
 local_addr = "${local_ip}:${port}"
@@ -637,14 +637,14 @@ EOF
     echo
 
     # Create the systemd service unit file
-    cat << EOF > "${service_dir}/rathole-outside_russia${tunnel_port}.service"
+    cat << EOF > "${service_dir}/rathole-Outside${tunnel_port}.service"
 [Unit]
-Description=Rathole Outside Russia Port $tunnel_port 
+Description=Rathole Outside Port $tunnel_port 
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=${config_dir}/rathole ${config_dir}/outside_russia${tunnel_port}.toml
+ExecStart=${config_dir}/rathole ${config_dir}/Outside${tunnel_port}.toml
 Restart=always
 RestartSec=3
 
@@ -656,15 +656,15 @@ EOF
     systemctl daemon-reload >/dev/null 2>&1
 
     # Enable and start the service to start on boot
-    if systemctl enable --now "${service_dir}/rathole-outside-russia${tunnel_port}.service" >/dev/null 2>&1; then
-        colorize green "Outside Russia service with port $tunnel_port enabled to start on boot and started."
+    if systemctl enable --now "${service_dir}/rathole-Outside${tunnel_port}.service" >/dev/null 2>&1; then
+        colorize green "Outside service with port $tunnel_port enabled to start on boot and started."
     else
         colorize red "Failed to enable service with port $tunnel_port. Please check your system configuration."
         return 1
     fi
 
     echo
-    colorize green "Outside Russia server configuration completed successfully."
+    colorize green "Outside server configuration completed successfully."
 }
 
 
@@ -684,15 +684,15 @@ check_tunnel_status() {
     colorize yellow "Checking all services status..." bold
     sleep 1
     echo
-    for config_path in "$config_dir"/russia*.toml; do
+    for config_path in "$config_dir"/Russia*.toml; do
         if [ -f "$config_path" ]; then
             # Extract config_name without directory path and change it to service name
 			config_name=$(basename "$config_path")
 			config_name="${config_name%.toml}"
 			service_name="rathole-${config_name}.service"
-            config_port="${config_name#russia}"
+            config_port="${config_name#Russia}"
             
-			# Check if the rathole-client-outside-russia service is active
+			# Check if the rathole-client-Outside service is active
 			if systemctl is-active --quiet "$service_name"; then
 				colorize green "Russia service with tunnel port $config_port is running"
 			else
@@ -701,19 +701,19 @@ check_tunnel_status() {
    		fi
     done
     
-    for config_path in "$config_dir"/outside_russia*.toml; do
+    for config_path in "$config_dir"/Outside*.toml; do
         if [ -f "$config_path" ]; then
             # Extract config_name without directory path and change it to service name
 			config_name=$(basename "$config_path")
 			config_name="${config_name%.toml}"
 			service_name="rathole-${config_name}.service"
-            config_port="${config_name#outside_russia}"
+            config_port="${config_name#Outside}"
             
-			# Check if the rathole-client-outside-russia service is active
+			# Check if the rathole-client-Outside service is active
 			if systemctl is-active --quiet "$service_name"; then
-				colorize green "Outside Russia service with tunnel port $config_port is running"
+				colorize green "Outside service with tunnel port $config_port is running"
 			else
-				colorize red "Outside Russia service with tunnel port $config_port is not running"
+				colorize red "Outside service with tunnel port $config_port is not running"
 			fi
    		fi
     done
@@ -743,13 +743,13 @@ tunnel_management() {
     local index=1
     declare -a configs
 
-    for config_path in "$config_dir"/russia*.toml; do
+    for config_path in "$config_dir"/Russia*.toml; do
         if [ -f "$config_path" ]; then
             # Extract config_name without directory path
             config_name=$(basename "$config_path")
             
-            # Remove "russia" prefix and ".toml" suffix
-            config_port="${config_name#russia}"
+            # Remove "Russia" prefix and ".toml" suffix
+            config_port="${config_name#Russia}"
             config_port="${config_port%.toml}"
             
             configs+=("$config_path")
@@ -760,17 +760,17 @@ tunnel_management() {
     
 
     
-    for config_path in "$config_dir"/outside_russia*.toml; do
+    for config_path in "$config_dir"/Outside*.toml; do
         if [ -f "$config_path" ]; then
             # Extract config_name without directory path
             config_name=$(basename "$config_path")
             
-            # Remove "outside_russia" prefix and ".toml" suffix
-            config_port="${config_name#outside_russia}"
+            # Remove "Outside" prefix and ".toml" suffix
+            config_port="${config_name#Outside}"
             config_port="${config_port%.toml}"
             
             configs+=("$config_path")
-            echo -e "${MAGENTA}${index}${NC}) ${GREEN}outside_russia${NC} service, Tunnel port: ${YELLOW}$config_port${NC}"
+            echo -e "${MAGENTA}${index}${NC}) ${GREEN}Outside${NC} service, Tunnel port: ${YELLOW}$config_port${NC}"
             ((index++))
         fi
     done
@@ -1008,7 +1008,7 @@ add_new_config(){
 	
 	echo
 	
-	if grep -q "russia" <<< "$config_path"; then
+	if grep -q "Russia" <<< "$config_path"; then
 	# Add each config port to the configuration file
     for port in "${config_ports[@]}"; do
         cat << EOF >> "$config_path"
