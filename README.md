@@ -1,4 +1,4 @@
-[Persian Readme](https://github.com/ILYAGVC/Rathole-Tunnel-Ru/blob/main/README_FA.md)
+[Russian](https://github.com/ILYAGVC/Rathole-Tunnel-Ru/blob/main/README_RU.md)
 
 # What is Rathole?
 A secure, stable and high-performance reverse proxy for NAT traversal, written in Rust
