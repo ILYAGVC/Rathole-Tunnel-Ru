@@ -163,7 +163,7 @@ EOF
     echo -e "${NC}${GREEN}"
     echo -e "${YELLOW}High-performance reverse tunnel${GREEN}"
     echo -e "Version: ${YELLOW}v1.3.2${GREEN}"
-    echo -e "Developer: ${YELLOW}Musixal (Russian Translation :ILYAGVC)${GREEN}"
+    echo -e "Developer: ${YELLOW}Musixal (Russian Translation: ILYAGVC)${GREEN}"
     echo -e "Github: ${YELLOW}github.com/ILYAGVC/Rathole-Tunnel-Ru${GREEN}"
 }
 
