@@ -197,8 +197,8 @@ ____________ _/  |_|  |__   ____ |  |   ____
 EOF
     echo -e "${NC}${GREEN}"
     echo -e "Version: ${YELLOW}v2.0${GREEN}"
-    echo -e "Github: ${YELLOW}github.com/Musixal/Rathole-Tunnel${GREEN}"
-    echo -e "Telegram Channel: ${YELLOW}@Gozar_Xray${NC}"
+    echo -e "Developer: ${YELLOW}Musixal (Russian Translation: ILYAGVC)${GREEN}"
+    echo -e "Github: ${YELLOW}github.com/ILYAGVC/Rathole-Tunnel-Ru${GREEN}"
 }
 
 # Function to display server location and IP
