@@ -163,9 +163,8 @@ EOF
     echo -e "${NC}${GREEN}"
     echo -e "${YELLOW}High-performance reverse tunnel${GREEN}"
     echo -e "Version: ${YELLOW}v1.3.2${GREEN}"
-    echo -e "Developer: ${YELLOW}Musixal${GREEN}"
-    echo -e "Github: ${YELLOW}github.com/Musixal/Rathole-Tunnel${GREEN}"
-    echo -e "Telegram Channel: ${YELLOW}@Gozar_Xray${NC}"
+    echo -e "Developer: ${YELLOW}Musixal (Russian Translation :ILYAGVC)${GREEN}"
+    echo -e "Github: ${YELLOW}github.com/ILYAGVC/Rathole-Tunnel-Ru${GREEN}"
 }
 
 
@@ -202,12 +201,12 @@ fi
     echo -e "${YELLOW}Configurating RatHole Tunnel...${NC}"
     echo -e "\e[93m═════════════════════════════════════════════\e[0m" 
     echo ''
-    echo -e "1. For ${GREEN}IRAN${NC} Server\n"
-    echo -e "2. For ${CYAN}Kharej${NC} Server\n"
+    echo -e "1. For ${GREEN}Russia${NC} Server\n"
+    echo -e "2. For ${CYAN}Outside Russia${NC} Server\n"
     read -p "Enter your choice: " configure_choice
     case "$configure_choice" in
-        1) iran_server_configuration ;;
-        2) kharej_server_configuration ;;
+        1) russia_server_configuration ;;
+        2) outside_russia_server_configuration ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
     echo ''
@@ -216,14 +215,14 @@ fi
 
 
 #Global Variables
-     iran_config_file="${config_dir}/server.toml"
-     iran_service_name="rathole-iran.service"
-     iran_service_file="/etc/systemd/system/${iran_service_name}"
+     russia_config_file="${config_dir}/server.toml"
+     russia_service_name="rathole-russia.service"
+     russia_service_file="/etc/systemd/system/${russia_service_name}"
 
    
-    kharej_config_file="${config_dir}/client*.toml"
-    kharej_service_name="rathole-kharej.service"
-    kharej_service_file="/etc/systemd/system/${kharej_service_name}"
+    outside_russia_config_file="${config_dir}/client*.toml"
+    outside_russia_service_name="rathole-outside-russia.service"
+    outside_russia_service_file="/etc/systemd/system/${outside_russia_service_name}"
     
     
 # Function to check if a given string is a valid IPv6 address
@@ -242,10 +241,10 @@ check_ipv6() {
     fi
 }
 
-# Function to configure Iran server
-iran_server_configuration() {  
+# Function to configure Russia server
+russia_server_configuration() {  
     clear
-    echo -e "${YELLOW}Configuring IRAN server...${NC}\n" 
+    echo -e "${YELLOW}Configuring Russia server...${NC}\n" 
     
     # Read the tunnel port
     read -p "Enter the tunnel port: " tunnel_port
@@ -317,7 +316,7 @@ fi
 sleep 1
 
     # Generate server configuration file
-    cat << EOF > "$iran_config_file"
+    cat << EOF > "$russia_config_file"
 [server]
 bind_addr = "${local_ip}:${tunnel_port}"
 default_token = "musixal_tunnel"
@@ -333,7 +332,7 @@ EOF
 
     # Add each config port to the configuration file
     for port in "${config_ports[@]}"; do
-        cat << EOF >> "$iran_config_file"
+        cat << EOF >> "$russia_config_file"
 [server.services.${port}]
 type = "$transport"
 bind_addr = "${local_ip}:${port}"
@@ -342,18 +341,18 @@ EOF
     done
     
     echo ''
-    echo -e "${GREEN}IRAN server configuration completed.${NC}\n"
+    echo -e "${GREEN}Russia server configuration completed.${NC}\n"
     echo -e "Starting Rathole server as a service...\n"
 
     # Create the systemd service unit file
-    cat << EOF > "$iran_service_file"
+    cat << EOF > "$russia_service_file"
 [Unit]
-Description=Rathole Server (Iran)
+Description=Rathole Server (Russia)
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=${config_dir}/rathole ${iran_config_file}
+ExecStart=${config_dir}/rathole ${russia_config_file}
 Restart=always
 RestartSec=3
 
@@ -370,29 +369,29 @@ EOF
     fi
 
     # Enable the service to start on boot
-    if systemctl enable "$iran_service_name" >/dev/null 2>&1; then
-        echo -e "${GREEN}Service '$iran_service_name' enabled to start on boot.${NC}"
+    if systemctl enable "$russia_service_name" >/dev/null 2>&1; then
+        echo -e "${GREEN}Service '$russia_service_name' enabled to start on boot.${NC}"
     else
-        echo -e "${RED}Failed to enable service '$iran_service_name'. Please check your system configuration.${NC}"
+        echo -e "${RED}Failed to enable service '$russia_service_name'. Please check your system configuration.${NC}"
         return 1
     fi
 
     # Start the service
-    if systemctl start "$iran_service_name"; then
-        echo -e "${GREEN}Service '$iran_service_name' started.${NC}"
+    if systemctl start "$russia_service_name"; then
+        echo -e "${GREEN}Service '$russia_service_name' started.${NC}"
     else
         echo -e "${RED}Failed to start service '$service_name'. Please check your system configuration.${NC}"
         return 1
     fi
 }
 
-# Function for configuring Kharej server
-kharej_server_configuration() {
+# Function for configuring Outside Russia server
+outside_russia_server_configuration() {
     clear
-    echo -e "${YELLOW}Configuring kharej server...${NC}\n"
+    echo -e "${YELLOW}Configuring Outside Russia server...${NC}\n"
     
     while true; do
-    read -p "How many IRAN servers do you have: " SERVER_NUM
+    read -p "How many Russia servers do you have: " SERVER_NUM
     if [[ $SERVER_NUM =~ ^[0-9]+$ ]] && [ $SERVER_NUM -ge 1 ] && [ $SERVER_NUM -le 99 ]; then
         break
     else
@@ -412,7 +411,7 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
     echo -e "\e[93m═════════════════════════════════════════════\e[0m"  
     echo ''    
     # Read the server address
-    read -p "Enter the IRAN server address [IPv4/IPv6]: " SERVER_ADDR
+    read -p "Enter the Russia server address [IPv4/IPv6]: " SERVER_ADDR
 
     echo ''
     # Read the tunnel port
@@ -468,7 +467,7 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
 	done
 
     #this new format allow us to build various client_port.toml 
-    local kharej_config_file="${config_dir}/client_p${tunnel_port}.toml"
+    local outside_russia_config_file="${config_dir}/client_p${tunnel_port}.toml"
 
 #Add IPv6 Support
 local_ip='0.0.0.0'
@@ -480,7 +479,7 @@ if check_ipv6 "$SERVER_ADDR"; then
 fi
 
     # Generate server configuration file
-    cat << EOF > "$kharej_config_file"
+    cat << EOF > "$outside_russia_config_file"
 [client]
 remote_addr = "${SERVER_ADDR}:${tunnel_port}"
 default_token = "musixal_tunnel"
@@ -497,7 +496,7 @@ EOF
 
     # Add each config port to the configuration file
     for port in "${config_ports[@]}"; do
-        cat << EOF >> "$kharej_config_file"
+        cat << EOF >> "$outside_russia_config_file"
 [client.services.${port}]
 type = "$transport"
 local_addr = "${local_ip}:${port}"
@@ -506,7 +505,7 @@ EOF
     done
 
 # Now modify ExecCommand for our service file
-    EXEC_COMMAND+="${config_dir}/rathole ${kharej_config_file} & "
+    EXEC_COMMAND+="${config_dir}/rathole ${outside_russia_config_file} & "
     sleep 1
 done
   
@@ -518,13 +517,13 @@ done
     EXEC_COMMAND+="'"
     
     echo ''
-    echo -e "${GREEN}Kharej server configuration completed.${NC}\n"
+    echo -e "${GREEN}Outside Russia server configuration completed.${NC}\n"
     echo -e "${GREEN}Starting Rathole server as a service...${NC}\n"
 
     # Create the systemd service unit file
-    cat << EOF > "$kharej_service_file"
+    cat << EOF > "$outside_russia_service_file"
 [Unit]
-Description=Rathole Server (Kharej)
+Description=Rathole Server (Outside Russia)
 After=network.target
 
 [Service]
@@ -546,18 +545,18 @@ EOF
     fi
 
     # Enable the service to start on boot
-    if systemctl enable "$kharej_service_name" >/dev/null 2>&1; then
-        echo -e "${GREEN}Service '$kharej_service_name' enabled to start on boot.${NC}"
+    if systemctl enable "$outside_russia_service_name" >/dev/null 2>&1; then
+        echo -e "${GREEN}Service '$outside_russia_service_name' enabled to start on boot.${NC}"
     else
-        echo -e "${RED}Failed to enable service '$kharej_service_name'. Please check your system configuration.${NC}"
+        echo -e "${RED}Failed to enable service '$outside_russia_service_name'. Please check your system configuration.${NC}"
         return 1
     fi
 
     # Start the service
-    if systemctl start "$kharej_service_name"; then
-        echo -e "${GREEN}Service '$kharej_service_name' started.${NC}"
+    if systemctl start "$outside_russia_service_name"; then
+        echo -e "${GREEN}Service '$outside_russia_service_name' started.${NC}"
     else
-        echo -e "${RED}Failed to start service '$kharej_service_name'. Please check your system configuration.${NC}"
+        echo -e "${RED}Failed to start service '$outside_russia_service_name'. Please check your system configuration.${NC}"
         return 1
     fi
 
@@ -586,13 +585,13 @@ fi
 
 
 # Check if server.toml exists and delete it
-if [ -f "$iran_config_file" ]; then
-  rm -f "$iran_config_file"
+if [ -f "$russia_config_file" ]; then
+  rm -f "$russia_config_file"
 fi
 
 # Check if client.toml exists and delete it
-if ls $kharej_config_file 1> /dev/null 2>&1; then
-    for file in $kharej_config_file; do
+if ls $outside_russia_config_file 1> /dev/null 2>&1; then
+    for file in $outside_russia_config_file; do
          rm -f $file
     done
 fi
@@ -601,22 +600,22 @@ fi
     delete_cron_job 
     echo ''
     # Stop and disable the client service if it exists
-    if [[ -f "$kharej_service_file" ]]; then
-        if systemctl is-active "$kharej_service_name" &>/dev/null; then
-            systemctl stop "$kharej_service_name"
-            systemctl disable "$kharej_service_name"
+    if [[ -f "$outside_russia_service_file" ]]; then
+        if systemctl is-active "$outside_russia_service_name" &>/dev/null; then
+            systemctl stop "$outside_russia_service_name"
+            systemctl disable "$outside_russia_service_name"
         fi
-        rm -f "$kharej_service_file"
+        rm -f "$outside_russia_service_file"
     fi
 
 
-    # Stop and disable the Iran server service if it exists
-    if [[ -f "$iran_service_file" ]]; then
-        if systemctl is-active "$iran_service_name" &>/dev/null; then
-            systemctl stop "$iran_service_name"
-            systemctl disable "$iran_service_name"
+    # Stop and disable the Russia server service if it exists
+    if [[ -f "$russia_service_file" ]]; then
+        if systemctl is-active "$russia_service_name" &>/dev/null; then
+            systemctl stop "$russia_service_name"
+            systemctl disable "$russia_service_name"
         fi
-        rm -f "$iran_service_file"
+        rm -f "$russia_service_file"
     fi
     
     echo ''
@@ -638,19 +637,19 @@ check_tunnel_status() {
     echo -e "${YELLOW}Checking tunnel status...${NC}\n"
     sleep 1
     
-    # Check if the rathole-client-kharej service is active
-    if systemctl is-active --quiet "$kharej_service_name"; then
-        echo -e "${GREEN}Kharej service is running on this server.${NC}"
+    # Check if the rathole-client-outside-russia service is active
+    if systemctl is-active --quiet "$outside_russia_service_name"; then
+        echo -e "${GREEN}Outside Russia service is running on this server.${NC}"
     else
-        echo -e "${RED}Kharej service is not running on this server.${NC}"
+        echo -e "${RED}Outside Russia service is not running on this server.${NC}"
     fi
     
     echo ''
-    # Check if the rathole-server-iran service is active
-    if systemctl is-active --quiet "$iran_service_name"; then
-        echo -e "${GREEN}IRAN service is running on this server..${NC}"
+    # Check if the rathole-server-russia service is active
+    if systemctl is-active --quiet "$russia_service_name"; then
+        echo -e "${GREEN}Russia service is running on this server..${NC}"
     else
-        echo -e "${RED}IRAN service is not running on this server..${NC}"
+        echo -e "${RED}Russia service is not running on this server..${NC}"
     fi
     echo ''
     read -p "Press Enter to continue..."
@@ -659,23 +658,23 @@ check_tunnel_status() {
 #Function to restart services
 restart_services() {
     echo ''
-    echo -e "${YELLOW}Restarting IRAN & Kharej services...${NC}\n"
+    echo -e "${YELLOW}Restarting Russia & Outside Russia services...${NC}\n"
     sleep 1
-    # Check if rathole-client-kharej.service exists
-    if systemctl list-units --type=service | grep -q "$kharej_service_name"; then
-        systemctl restart "$kharej_service_name"
-        echo -e "${GREEN}Kharej service restarted.${NC}"
+    # Check if rathole-client-outside-russia.service exists
+    if systemctl list-units --type=service | grep -q "$outside_russia_service_name"; then
+        systemctl restart "$outside_russia_service_name"
+        echo -e "${GREEN}Outside Russia service restarted.${NC}"
     fi
 
-    # Check if rathole-server-iran.service exists
-    if systemctl list-units --type=service | grep -q "$iran_service_name"; then
-        systemctl restart "$iran_service_name"
-        echo -e "${GREEN}IRAN service restarted.${NC}"
+    # Check if rathole-server-russia.service exists
+    if systemctl list-units --type=service | grep -q "$russia_service_name"; then
+        systemctl restart "$russia_service_name"
+        echo -e "${GREEN}Russia service restarted.${NC}"
     fi
 
     # If neither service exists
-    if ! systemctl list-units --type=service | grep -q "$kharej_service_name" && \
-       ! systemctl list-units --type=service | grep -q "$iran_service_name"; then
+    if ! systemctl list-units --type=service | grep -q "$outside_russia_service_name" && \
+       ! systemctl list-units --type=service | grep -q "$russia_service_name"; then
         echo -e "${RED}There is no service to restart.${NC}"
     fi
     
@@ -738,18 +737,18 @@ add_cron_job_menu() {
     clear
     # Prompt user to choose a service
     echo -e "Select the service you want to restart:\n"
-    echo -e "${CYAN}1. Kharej service${NC}"
-    echo -e "${GREEN}2. IRAN service${NC}"
+    echo -e "${CYAN}1. Outside Russia service${NC}"
+    echo -e "${GREEN}2. Russia service${NC}"
     echo ''
     read -p "Enter your choice: " service_choice
     echo ''
     # Validate user input
     case $service_choice in
         1)
-            service_name="$kharej_service_name"
+            service_name="$outside_russia_service_name"
             ;;
         2)
-            service_name="$iran_service_name"
+            service_name="$russia_service_name"
             ;;
         *)
             echo -e "${RED}Invalid choice. Please enter 1 or 2.${NC}"
@@ -922,19 +921,19 @@ del_iptables_rules(){
 # Function to check the security token
 check_security_token() {
 echo ''
-echo -e "${RED}IMPORTANT!${NC} ${CYAN}The security token must be same in the iran and kharej server.${NC}\n"
+echo -e "${RED}IMPORTANT!${NC} ${CYAN}The security token must be same in the Russia and Outside Russia server.${NC}\n"
 
 # Check if server.toml exists and update it
-if [ -f "$iran_config_file" ]; then
-     port=$(cat "$iran_config_file" | grep -oP 'bind_addr = "0\.0\.0\.0:\K[0-9]+' | head -n1)  
-     change_security_token "$iran_config_file" "$port"
+if [ -f "$russia_config_file" ]; then
+     port=$(cat "$russia_config_file" | grep -oP 'bind_addr = "0\.0\.0\.0:\K[0-9]+' | head -n1)  
+     change_security_token "$russia_config_file" "$port"
      restart_services
      return 0
 fi
 
 # Check if client.toml exists and update it
-if ls $kharej_config_file 1> /dev/null 2>&1; then
-     for file in $kharej_config_file; do
+if ls $outside_russia_config_file 1> /dev/null 2>&1; then
+     for file in $outside_russia_config_file; do
          filename=$(basename "$file")   
          change_security_token "$file" "${filename:8:-5}"
          echo -e "${CYAN} _____________________________________________ ${NC}"
